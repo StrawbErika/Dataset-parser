@@ -103,7 +103,7 @@ def proper_format_file(filenames, directory):
     
 def save_json(data, name):
     file = open(name + ".csv","w") 
-    file.write("30 Minutes,Lane 1 Flow (Veh/30 Minutes),# Lane Points,% Observed \n ")
+    file.write("30 Minutes,Lane 1 Flow (Veh/30 Minutes),# Lane Points,% Observed \n")
     num = 0
     while(num != len(data)):
         file.write(data[num]['time_updated'] + "," + get_status(data[num]["status"]) + "," + "1" + "," + "100" + "\n")
