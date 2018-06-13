@@ -45,7 +45,6 @@ def load_file_into_dict(file_name):
     return contents_dict
 
 def road_names(main_road, road_data):
-    print(main_road)
     list_road_names = []
     num = 0
     x = 0
@@ -66,17 +65,52 @@ def find_road_data_index(complete_road_data, name):
     num = 0
     while(num != len(complete_road_data)):
         if(complete_road_data[num]["line"] == name):
-            print(num)
             index = num 
         num = num + 1
     return index
 
 
-complete_road_data = load_file_into_dict("/home/shortcake/Desktop/OJT/Dataset-parser/out/traffic-status-20180530000000.json")
+
+def get_all_road_data(main_road, list_of_dir):
+    road_data = load_file_into_dict(list_of_dir[0])
+    sub_roads = road_names(main_road, road_data)
+    sub_road_index = ask_sub_road()
+    chosen_road = sub_roads[sub_road_index]
+
+    list_of_data = []
+    num = 0
+    fake = 0
+    while(num != len(list_of_dir)):
+        if((check_if_empty(list_of_dir[num])) == False):
+            complete_road_data = load_file_into_dict(list_of_dir[num])
+            list_of_data.append(complete_road_data[find_road_data_index(complete_road_data,chosen_road)])
+        else:
+            fake = fake + 1
+        num = num + 1
+    return list_of_data
+
+def check_if_empty(file):
+    boolean = (os.stat(file).st_size == 0)
+    print(boolean)
+    return boolean
+
+def proper_format_file(filenames, directory):
+    file_name = []
+    num = 0
+    while(num != len(filenames)):
+        file_name.append(directory+filenames[num])
+        num = num + 1
+    return file_name
+    
+def save_json(data, name):
+    file = open(name + ".txt","w") 
+    file.write(data)
+    file.close() 
+
+main_directory = "/home/shortcake/Desktop/OJT/Dataset-parser/out/"
 main_road = ask_main_road()
-direction =  ask_direction()
-sub_roads = road_names(main_road, complete_road_data)
-sub_road_index = ask_sub_road()
-chosen_road = sub_roads[sub_road_index]
-road_data = complete_road_data[find_road_data_index(complete_road_data,chosen_road)]
-print(road_data)
+# direction =  ask_direction()
+directories = proper_format_file(get_files(main_directory), main_directory)
+data = get_all_road_data(main_road, directories)
+print(len(data))
+save_json(str(data), "hoi")
