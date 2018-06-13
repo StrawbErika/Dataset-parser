@@ -69,14 +69,14 @@ def find_road_data_index(complete_road_data, name):
         num = num + 1
     return index
 
-
-
-def get_all_road_data(main_road, list_of_dir):
+def get_chosen_road(main_road, list_of_dir):
     road_data = load_file_into_dict(list_of_dir[0])
     sub_roads = road_names(main_road, road_data)
     sub_road_index = ask_sub_road()
     chosen_road = sub_roads[sub_road_index]
+    return chosen_road
 
+def get_all_road_data(main_road, list_of_dir, chosen_road):
     list_of_data = []
     num = 0
     fake = 0
@@ -91,7 +91,6 @@ def get_all_road_data(main_road, list_of_dir):
 
 def check_if_empty(file):
     boolean = (os.stat(file).st_size == 0)
-    print(boolean)
     return boolean
 
 def proper_format_file(filenames, directory):
@@ -103,14 +102,39 @@ def proper_format_file(filenames, directory):
     return file_name
     
 def save_json(data, name):
-    file = open(name + ".txt","w") 
-    file.write(data)
+    file = open(name + ".csv","w") 
+    file.write("30 Minutes,Lane 1 Flow (Veh/30 Minutes),# Lane Points,% Observed \n ")
+    num = 0
+    while(num != len(data)):
+        file.write(data[num]['time_updated'] + "," + get_status(data[num]["status"]) + "," + "1" + "," + "100" + "\n")
+        num = num + 1        
     file.close() 
 
+def get_status(status):
+    num = 0
+    if(status == "light"):
+        num = 25
+    elif(status == "mod"):
+        num = 50
+    else:
+        num = 75
+    return str(num)
+
+def get_direction(data, direction):
+    direction_data = []
+    num = 0
+    while(num != len(data)):
+        hello = data[num][direction]
+        direction_data.append(hello)
+        num = num + 1
+    return direction_data
+    
 main_directory = "/home/shortcake/Desktop/OJT/Dataset-parser/out/"
 main_road = ask_main_road()
-# direction =  ask_direction()
+direction =  ask_direction()
+
 directories = proper_format_file(get_files(main_directory), main_directory)
-data = get_all_road_data(main_road, directories)
-print(len(data))
-save_json(str(data), "hoi")
+chosen_road = get_chosen_road(main_road, directories)
+data = get_all_road_data(main_road, directories, chosen_road)
+list_of_direction = get_direction(data, direction)
+save_json(list_of_direction, chosen_road)
