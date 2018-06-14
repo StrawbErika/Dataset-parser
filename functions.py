@@ -160,5 +160,4 @@ def check_format_time(time, hour):
             two_digits = time
     else:
         two_digits = time
-    print(two_digits)
     return two_digits
