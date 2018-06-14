@@ -136,11 +136,11 @@ def convert_time(time):
     if(time[len(time)-2:] == 'pm'):
         list_time = time[0:len(time)-2].split(':')
         hours = int(list_time[0]) + 12
-        minute = int(list_time[1])
+        minute = list_time[1]
     else:
         list_time = time[0:len(time)-2].split(':')
-        hours = int(list_time[0])
-        minute = int(list_time[1])
+        hours = list_time[0]
+        minute = list_time[1]
     return check_format_time(str(hours), "true") + ":" + check_format_time(str(minute), "false")
 
 def convert_all_time(data):
@@ -160,4 +160,5 @@ def check_format_time(time, hour):
             two_digits = time
     else:
         two_digits = time
+    print(two_digits)
     return two_digits
