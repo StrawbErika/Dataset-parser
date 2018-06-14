@@ -19,21 +19,21 @@ def ask_main_road():
     road = ""
     if(mr == "1"):
         road = "EDSA"
-    elif(road == "2"):
+    elif(mr == "2"):
         road = "COMMONWEALTH"
-    elif(road == "3"):
+    elif(mr == "3"):
         road = "QUEZON"
-    elif(road == "4"):
+    elif(mr == "4"):
         road = "ESPAA"
-    elif(road == "5"):
+    elif(mr == "5"):
         road = "C5"
-    elif(road == "6"):
+    elif(mr == "6"):
         road = "ORTIGAS"
-    elif(road == "7"):
+    elif(mr == "7"):
         road = "MARCOS"
-    elif(road == "8"):
+    elif(mr == "8"):
         road = "ROXAS"
-    elif(road == "9"):
+    elif(mr == "9"):
         road = "SLEX"
     return road
 
@@ -50,7 +50,9 @@ def road_names(main_road, road_data):
     x = 0
     while(num != len(road_data)):
         complete_name = road_data[num]["line"].split(" ")
+        # print(main_road)
         if(complete_name[0] == main_road):
+            # print(complete_name[0])
             list_road_names.append(road_data[num]["line"])
             print("[" + str(x) + "] " +road_data[num]["line"])
             x = x + 1
@@ -79,19 +81,20 @@ def get_chosen_road(main_road, list_of_dir):
 def get_all_road_data(main_road, list_of_dir, chosen_road):
     list_of_data = []
     num = 0
-    fake = 0
     while(num != len(list_of_dir)):
-        if((check_if_empty(list_of_dir[num])) == False):
-            complete_road_data = load_file_into_dict(list_of_dir[num])
-            list_of_data.append(complete_road_data[find_road_data_index(complete_road_data,chosen_road)])
-        else:
-            fake = fake + 1
+        complete_road_data = load_file_into_dict(list_of_dir[num])
+        list_of_data.append(complete_road_data[find_road_data_index(complete_road_data,chosen_road)])
         num = num + 1
     return list_of_data
 
-def check_if_empty(file):
-    boolean = (os.stat(file).st_size == 0)
-    return boolean
+def check_if_empty(list_of_dir):
+    not_empty = []
+    num = 0
+    while(num != len(list_of_dir)):
+        if((os.stat(list_of_dir[num]).st_size == 0) == False):
+            not_empty.append(list_of_dir[num])
+        num = num + 1
+    return not_empty
 
 def proper_format_file(filenames, directory):
     file_name = []
@@ -103,7 +106,7 @@ def proper_format_file(filenames, directory):
     
 def save_file(data, name):
     file = open(name + ".csv","w") 
-    file.write("30 Minutes,Lane 1 Flow (Veh/30 Minutes),# Lane Points,% Observed \n")
+    file.write("5 Minutes,Lane 1 Flow (Veh/5 Minutes),# Lane Points,% Observed \n")
     num = 0
     while(num != len(data)):
         file.write(data[num]['time_updated'] + "," + get_status(data[num]["status"]) + "," + "1" + "," + "100" + "\n")
@@ -161,3 +164,24 @@ def check_format_time(time, hour):
     else:
         two_digits = time
     return two_digits
+
+def get_date(directory, index):
+    splitted =  directory.split('-')
+    sequence_json = splitted[3].split('.')
+    seq = sequence_json[0]
+    year = seq[:4]
+    month = seq[4:6]
+    day = seq[6:8]
+    complete_date = day+"/"+month+"/"+year 
+    return complete_date
+
+def add_to_time(data, directories):
+    num = 0
+    while(num != len(data)):
+        data[num]['time_updated'] = get_date(directories[num], num) + " " + data[num]['time_updated'][:-1]
+        num = num + 1        
+
+def format_name(road, direction):
+    road_name = road.replace(" ", "_")
+    final = direction + "_" + road_name
+    return final.lower() 
